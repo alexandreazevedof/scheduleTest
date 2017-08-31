@@ -1,0 +1,576 @@
+﻿@{
+    ViewData["Title"] = "Schedule";
+}
+@using System.Collections
+
+@using EF6.Data;
+@{
+    <!-- Datasource for Appointments -->
+//List<DefaultSchedule> Appoint = new List<DefaultSchedule>();
+//Appoint.Add(new DefaultSchedule { Id = 1, Subject = "Meeting", Number="aa", Job="2", StartDate= DateTime.Now, DueDate = DateTime.Now, IssueDate=DateTime.Now, StartTime = new DateTime(2015, 11, 10, 10, 00, 00), EndTime = new DateTime(2015, 11, 10, 11, 00, 00), Description = "", AllDay = false, Recurrence = false, RecurrenceRule = "", Category = "1" });
+//Appoint.Add(new DefaultSchedule { Id = 1, Subject = "Meeting", Number = "aa", Job = "2", StartDate = DateTime.Now, DueDate = DateTime.Now, IssueDate = DateTime.Now, StartTime = new DateTime(2015, 11, 10, 10, 00, 00), EndTime = new DateTime(2015, 11, 10, 11, 00, 00), Description = "", AllDay = false, Recurrence = false, RecurrenceRule = "", Category = "3" });
+
+    <!-- Datasource for CategorizeSettings -->
+    List<CategorizeSettings> CategorizeValue = new List<CategorizeSettings>();
+    CategorizeValue.Add(new CategorizeSettings { Text = "DM", Id = 1, Color = "#7f993e", FontColor = "#ffffff" });
+    CategorizeValue.Add(new CategorizeSettings { Text = "PM", Id = 2, Color = "#ff0000", FontColor = "#ffffff" });
+
+    
+}
+
+<div id="customWindow" style="display: none; z-index:10043 !important">
+    <form id="custom">
+        <table width="100%" cellpadding="5">
+            <tbody>
+                <tr style="display: none">
+                    <td>Id:</td>
+                    <td colspan="2">
+                        <input id="customId" type="text" name="Id" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>Subject:</td>
+                    <td colspan="2">
+                        <input id="subject" type="text" value="" name="Subject" onfocus="temp()" style="width: 100%" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>Number:</td>
+                    <td colspan="2">
+                        <input id="number" type="text" value="" name="Number" onfocus="temp()" style="width: 100%" readonly/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Job:</td>
+                    <td colspan="2">
+                        <input id="job" type="text" value="" name="Job" onfocus="temp()" style="width: 100%" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>Equipment:</td>
+                    <td colspan="2">
+                        <ej-autocomplete id="equipment" name="EquipmentString" width="65%" watermark-text="Search a equipment" 
+                                         multi-select-mode="@MultiSelectModeTypes.VisualMode" filter-type="StartsWith"
+                                         highlight-search="true" >
+                            <e-datamanager url="Home/GetEquipments"></e-datamanager>
+                            <e-autocomplete-fields text="Name" key="Id" />
+                        </ej-autocomplete>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Customer:</td>
+                    <td colspan="2">
+                        <input id="customer" type="text" value="" name="Customer" onfocus="temp()" style="width: 100%" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>Resource:</td>
+                    <td colspan="2">
+                        <input id="resource" type="text" value="" name="Resource" onfocus="temp()" style="width: 100%" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>Employee:</td>
+                    <td colspan="2">
+                        <input id="employee" type="text" value="" name="Employee" onfocus="temp()" style="width: 100%" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>Description:</td>
+                    <td colspan="2">
+                        <textarea id="customdescription" name="Description" rows="3" cols="50" style="width: 100%; resize: vertical"></textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td>ScheduleFor:</td>
+                    <td>
+                        <input id="ScheduleFor" type="text" value="" name="ScheduleFor" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>StartDate:</td>
+                    <td>
+                        <input id="StartDate" type="text" value="" name="StartDate" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>DueDate:</td>
+                    <td>
+                        <input id="DueDate" type="text" value="" name="DueDate" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>IssueDate:</td>
+                    <td>
+                        <input id="IssueDate" type="text" value="@DateTime.Now" name="IssueDate" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>Category:</td>
+                    <td>
+                        <ej-drop-down-list id="category" name="Category" datasource="CategorizeValue" change="onChange" watermark-text="Select">   
+                            <e-drop-down-list-fields value="Id" text="Text" />
+                        </ej-drop-down-list>
+                    </td>
+                </tr>
+                <tr style="display:none">
+                    <td>StartTime:</td>
+                    <td>
+                        <input id="StartTime" type="text" value="" name="StartTime" />
+                    </td>
+                </tr>
+                <tr style="display:none">
+                    <td>EndTime:</td>
+                    <td>
+                        <input id="EndTime" type="text" value="" name="EndTime" />
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="3">
+                        <div class="customcheck">AllDay:</div>
+                        <div class="customcheck">
+                            <input id="allday" type="checkbox" name="AllDay" onchange="alldayCheck()" />
+                        </div>
+                        <div class="customcheck">Recurrence:</div>
+                        <div>
+                            <input id="recurrence" type="checkbox" name="Recurrence" onchange="recurCheck()" />
+                        </div>
+                    </td>
+                </tr>
+                <tr class="recurrence" style="display: none">
+                    <td>Type:</td>
+                    <td>
+                        <select id="rType" name="freq">
+                            <option value="daily">Daily</option>
+                            <option value="weekly">Weekly</option>
+                            <option value="monthly">Monthly</option>
+                            <option value="yearly">Yearly</option>
+                        </select>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </form>
+    <div>
+        <button type="submit" onclick="cancel()" id="btncancel" style="float:right;margin-right:20px;margin-bottom:10px;">Cancel</button>
+        <button type="submit" onclick="save()" id="btnsubmit" style="float:right;margin-right:20px;margin-bottom:10px;">Submit</button>
+    </div>
+</div>
+
+
+
+
+
+@*<ej-schedule id="Schedule2" width="100%" height="525px" current-date="new DateTime(2015, 11, 8)">
+    <e-categorize-settings enable="true" allow-multiple="true" datasource="CategorizeValue" id="Id" text="Text" color="Color" font-color="FontColor"></e-categorize-settings>
+    <e-appointment-settings datasource="Appoint" id="Id" subject='"Subject"' start-time='"StartTime"' end-time='"EndTime"' description='"Description"' all-day='"AllDay"' recurrence='"Recurrence"' recurrence-rule='"RecurrenceRule"' categorize='"Category"'>
+    </e-appointment-settings>
+</ej-schedule>*@
+<div id="container" class="modal-body row">
+    
+        <div class="col-md-3">
+            <div class="category">
+                <div class="categoryheader">
+                    <div class="headertext">CATEGORY</div>
+                </div>
+                <div class="categorycontent">
+                    <div class="listbox">
+                        @*<e-datamanager url="Home/GetCatogories"></e-datamanager>*@
+                        <ej-list-box id="categoryList"  show-checkbox="true" datasource="CategorizeValue" allow-multi-selection="true" check-change="onFilter" 
+                                     check-all="true" >
+                            
+                            <e-list-box-fields id="Id" text="Text" value="Text" />
+                        </ej-list-box>
+                    </div>
+                </div>
+            </div>
+            <div class="agendaDays">
+                <div class="agendaheader">
+                    <div class="headertext">AGENDA RANGE</div>
+                </div>
+                <div class="agendacontent">
+                    <ej-date-picker id="agendaStartDate" value="DateTime.Now.GetDateTimeFormats()[3]" ></ej-date-picker>
+                    <ej-date-picker id="agendaEndDate" value="DateTime.Now.AddDays(7).GetDateTimeFormats()[3]" ></ej-date-picker>
+                    <ej-button id="agendabutton" text="Update" size="@ButtonSize.Normal" show-rounded-corner="true"  create="onAgendaButtonClick" click="onAgendaButtonClick" />
+                </div>
+            </div>
+        </div>
+    
+    <div class="col-md-9">
+        
+        <div class="frame">
+            <div class="control">
+                <ej-drop-down-list id="selectDate" target-id="dateList" width="20%" watermark-text="Select a Date" checkAll="true" select="onFilter"></ej-drop-down-list>
+                <div id="dateList">
+                    <ul>
+                        <li>ScheduleFor</li>
+                        <li>Start Date</li>
+                        <li>Due Date</li>
+                        <li>Issue Date</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        @*<e-datamanager url="Home/GetCatogories"></e-datamanager>*@
+        <ej-schedule id="Schedule1" width="100%" height="525px" appointment-window-open="onAppointmentWindowOpen" cell-click="onClick" create="onCreate" current-date="DateTime.Now">
+           
+            <e-categorize-settings enable="true" datasource="CategorizeValue" allow-multiple="true" id="Id" text="Text" color="Color" font-color="FontColor">
+                
+            </e-categorize-settings>
+            <e-appointment-settings apply-time-offset="false" id="Id" subject='"Subject"' number='"Number"' job='"Job"' StartDate='"StartDate"' DueDate='"DueDate"' IssueDate='"IssueDate"' start-time='"StartTime"' end-time='"EndTime"' categorize='"Category"' all-day='false' recurrence='"Recurrence"' recurrence-rule='"RecurrenceRule"' >
+                <e-datamanager url="Home/GetData" batch-url="Home/Batch" insert-url="Home/Add" update-url="Home/Update" remove-url="Home/Remove" adaptor="UrlAdaptor"></e-datamanager>
+            </e-appointment-settings>
+        </ej-schedule>
+
+    </div>
+    </div>
+
+    @section scripts{
+        <script type="text/javascript">
+            $(function () {
+                $("#btnsubmit,#btncancel").ejButton({ width: '85px' });
+                $("#ScheduleFor").ejDateTimePicker({width: "150px"})
+                $("#StartDate").ejDateTimePicker({ width: "150px" });
+                $("#DueDate").ejDateTimePicker({ width: "150px" });
+                $("#IssueDate").ejDateTimePicker({ width: "150px" });
+                $("#StartTime").ejDateTimePicker({ width: "150px" });
+                $("#EndTime").ejDateTimePicker({ width: "150px" });
+                $("#customWindow").ejDialog({
+                    width: 600,
+                    height: "auto",
+                    showOnInit: false,
+                    enableModal: true,
+                    title: "Schedule Work Order",
+                    enableResize: false,
+                    allowKeyboardNavigation: false,
+                    close: "clearFields"
+                });
+
+                //$("#categoryList").ejListBox({
+                //    width: "100%",
+                //    height: "60%",
+                //    showCheckbox: true,
+                //    checkedIndices: [1,2],
+                //    dataSource: CategorizeValue,
+                //    //fields: { text: "Text" },
+                //    //checkChange: "onListCheck",
+                //    //template: "<div id='clist' class='categoryname'>${Text}</div><div style='float:right;'><i class='icon-category' style='color:${Color}'></i></div>"
+                //});
+            });
+
+            function onFilter(args) {
+                var dropDownListObj = $("#selectDate").data("ejDropDownList");
+                var categoryObj = $("#categoryList").data('ejListBox');
+                var scheduleObj = $("#Schedule1").data("ejSchedule");
+
+                scheduleObj.dataSource().dataSource.url = "Home/filterData"; //controller method
+                var query = new ej.Query();
+
+                query.addParams("Date", dropDownListObj.selectedTextValue);
+                
+                var categoryListChecked = $.extend(true, [], categoryObj.model.checkedIndices);
+
+                var categorySelected = [];
+                for (var i = 0; i < categoryListChecked.length; i++) {
+                    categorySelected.push(categoryObj.listitems[categoryListChecked[i]]);
+                }
+                query.addParams("FilteredCategoryList", categorySelected);
+
+                scheduleObj.model.appointmentSettings.query = query;
+                scheduleObj.refreshAppointments();
+            }
+
+            function onAgendaButtonClick(args) {
+                var agendaStart = $("#agendaStartDate").data("ejDatePicker").model.value;
+                var agendaEnd = $("#agendaEndDate").data("ejDatePicker").model.value;
+
+                var days = ((agendaEnd - agendaStart) / (1000 * 3600 * 24) + 1);
+                $("#Schedule1").ejSchedule({
+                    currentDate: new Date(agendaStart),
+                    agendaViewSettings: {
+                        daysInAgenda: days
+
+                    }
+
+                });
+
+            }
+            //function onDateSelected(args) {
+            //    var dropDownListObj = $("#selectDate").data("ejDropDownList")
+            //    var obj = $("#Schedule1").data("ejSchedule");
+            //    obj.dataSource().dataSource.url = "/Home/filterData"; // calling the controller function to filter the appointments based on the resource selected 
+            //    var query = new ej.Query().addParams("Date", args.text);
+            //    obj.model.appointmentSettings.query = query;
+            //    obj.refreshAppointments();
+                
+            //}
+
+            //function onCategorySelected(args) {
+            //    var categoryObj = $("#categoryList").data('ejListBox');
+            //    var scheduleObj = $("#Schedule1").data("ejSchedule");
+
+
+
+            //    var categoryListChecked = $.extend(true, [], categoryObj.model.checkedIndices);
+
+            //    var filter = [];
+            //    for (var i = 0; i < categoryListChecked.length; i++) {
+            //        filter.push(categoryObj.listitems[categoryListChecked[i]]);
+            //    }
+
+            //    scheduleObj.dataSource().dataSource.url = "Home/filterData";
+            //    var query = new ej.Query().addParams("FilteredCategoryList", filter);
+            //    scheduleObj.model.appointmentSettings.query = query;
+            //    scheduleObj.refreshAppointments();
+
+                //list = scheduleObj.filterAppointments(filter);
+                //data = $.merge(data, list);
+
+                //scheduleObj.dataSource = data;
+                //scheduleObj.refreshAppointments();
+                //var catglist = [], data = [], idValue = "";
+
+                //for (var i = 0; i < args.model.checkedItems.length; i++) {
+                //    var j = args.model.checkedItems[i]; //get checkedItems
+                //    var catgCollection = ej.DataManager(scheduleObj.model.categorizeSettings.dataSource).executeLocal(ej.Query().where("Id", ej.FilterOperators.equal, categoryObj.listitems[j].Id )); // filter the category item
+
+                //    var getId = catgCollection[0].Id;
+                //    catglist.push({ field: "Category", operator: "contains", value: getId, predicate: "or" });
+                //    list = obj.filterAppointments(catglist); // filtering the appointments based on the selected category
+                //    data = $.merge(data, list);
+                //}
+
+
+
+                //var categoryListChecked = $.extend(true, [], categoryObj.model.checkedIndices);
+           
+                //var filter = [];
+                //for (var i = 0; i < categoryListChecked.length; i++) {
+                //    filter[i] = {
+                //        field: "Category",
+                //        operator: "equal",
+                //        value: categoryObj.listitems[categoryListChecked[i]].Id.toString(),
+                //        predicate: "or"
+                //    };
+                    
+                //}
+                //var result = scheduleObj.filterAppointments(filter);
+
+                
+                //scheduleObj.dataSource().dataSource.url = "/Home/filterDataByCategory"; // calling the controller function to filter the appointments based on the resource selected 
+                //var query = new ej.Query().where(filter);
+
+                //if (result.length > 0) {
+                //    scheduleObj.options("appointmentSettings", { dataSource: result });
+                //    //scheduleObj._currentAppointmentData = result;
+
+                //}
+                
+                //scheduleObj.refreshAppointments();
+
+            //}
+            function onSelected1(args) {
+                strtDate = args.date.getTime();// start date will be stored
+            }
+
+            function onSelected2(args) {
+                endDate = args.date.getTime();// end date will be stored
+                days = ((endDate - strtDate) / (1000 * 3600 * 24) + 1); // diff between start and end days will be stored 
+                $("#Schedule1").ejSchedule({
+                    currentDate: new Date(strtDate),
+                    agendaViewSettings: {
+                        daysInAgenda: days
+                    }
+                });
+            }
+
+            function onClick(args) {
+                this._allDay = $(args.target.currentTarget).hasClass("e-alldaycells");
+            }
+
+            function onAppointmentWindowOpen(args) {
+                args.cancel = true;
+                //$("#StartTime").ejDateTimePicker({ value: args.startTime });
+                //$("#EndTime").ejDateTimePicker({ value: args.endTime });
+
+                $("#IssueDate").ejDateTimePicker({ enabled: false });
+
+                var rand = Math.floor(Math.random() * 99999999).toString();
+                $("#number").val(rand);
+
+                if (!ej.isNullOrUndefined(args.target)) {
+                    if ($(args.target.currentTarget).hasClass("e-alldaycells") || this._allDay) {
+                        $("#allday").prop("checked", true);
+                        alldayCheck();
+                    }
+                    else
+                        args.model.currentView == "month" ? $("#allday").prop("checked", true) : $("#allday").prop("checked", false);
+                    $("#StartTime,#EndTime").ejDateTimePicker({ enabled: ($(args.target.currentTarget).hasClass("e-alldaycells") || $(args.target.currentTarget).hasClass("e-monthcells") || args.model.currentView == "month") ? false : true });
+                }
+                if (!ej.isNullOrUndefined(args.appointment)) {
+                    $("#customId").val(args.appointment.Id);
+                    $("#subject").val(args.appointment.Subject);
+                    $("#number").val(args.appointment.Number);
+                    $("#job").val(args.appointment.Job);
+                    $("#ScheduleFor").ejDateTimePicker({value: new Date(args.appointment.ScheduleFor)})
+                    $("#StartDate").ejDateTimePicker({ value: new Date(args.appointment.StartDate) });
+                    $("#DueDate").ejDateTimePicker({ value: new Date(args.appointment.DueDate) });
+                    $("#IssueDate").ejDateTimePicker({ value: new Date(args.appointment.IssueDate) });
+                    $("#category").ejDropDownList({ value: args.appointment.Category });
+                    $("#resource").val(args.appointment.Resource);
+                    $("#employee").val(args.appointment.Employee);
+                    $("#customer").val(args.appointment.Customer);
+                    //$("#equipment").ejAutocomplete({ value: args.appointment.Equipments);
+                    //$("#equipment").val(args.appointment.Equipment);
+
+                    $("#customdescription").val(args.appointment.Description);
+                    $("#StartTime").ejDateTimePicker({ value: new Date(args.appointment.StartTime) });
+                    $("#EndTime").ejDateTimePicker({ value: new Date(args.appointment.EndTime) });
+                    $("#allday").prop("checked", args.appointment.AllDay);
+                    $("#recurrence").prop("checked", args.appointment.Recurrence);
+                    if (args.appointment.Recurrence) {
+                        $("#rType").val(args.appointment.RecurrenceRule.split(";")[0].split("=")[1].toLowerCase());
+                        $("tr.recurrence").css("display", "table-row");
+                    }
+                }
+                $("#customWindow").ejDialog("open");
+                if (this._allDay) alldayCheck();
+            }
+
+            function save() {
+                if ($.trim($("#subject").val()) == "") {
+                    $("#subject").addClass("error");
+                    return false;
+                }
+                var obj = {}, temp = {}, rType;
+                var formelement = $("#customWindow").find("#custom").get(0);
+                var processed = false;
+                for (var index = 0; index < formelement.length; index++) {
+                    var columnName = formelement[index].name, $element = $(formelement[index]);
+                    if (columnName != undefined) {
+                        if (columnName == "")
+                            columnName = formelement[index].id.replace(this._id, "");
+                        if (columnName != "" && obj[columnName] == null) {
+                            var value = formelement[index].value;
+                            if (columnName == "Id" && value != "")
+                                value = parseInt(value);
+                            if (columnName == "equipment" && value == "") {
+                                continue;
+
+                            }
+                            if ($element.hasClass("e-datetimepicker"))
+                                if (columnName == "StartTime" || columnName == "EndTime") {
+                                    value = obj.ScheduleFor;
+                                    
+                                } else {
+                                    value = new Date(value);
+
+                                }
+
+                            if (formelement[index].type == "checkbox")
+                                value = formelement[index].checked;
+                            if (columnName == "freq") {
+                                if (formelement[index].type == "select-one") {
+                                    rType = document.getElementById("rType");
+                                    temp[columnName] = rType.options[rType.selectedIndex].value;
+                                }
+                            }
+                            obj[columnName] = value;
+                           
+                        }
+                    }
+                }
+                if (obj.Recurrence) {
+                    if (temp.freq.toUpperCase() == "DAILY")
+                        obj["RecurrenceRule"] = "FREQ=DAILY;INTERVAL=1;COUNT=5";
+                    else if (temp.freq.toUpperCase() == "WEEKLY")
+                        obj["RecurrenceRule"] = "FREQ=WEEKLY;BYDAY=MO,WE,TH;INTERVAL=1;COUNT=10";
+                    else if (temp.freq.toUpperCase() == "MONTHLY")
+                        obj["RecurrenceRule"] = "FREQ=MONTHLY;BYMONTHDAY=" + obj.StartTime.getDate() + ";INTERVAL=1;COUNT=5";
+                    else if (temp.freq.toUpperCase() == "YEARLY")
+                        obj["RecurrenceRule"] = "FREQ=YEARLY;BYMONTHDAY=" + obj.StartTime.getDate() + ";BYMONTH=" + (obj.StartTime.getMonth() + 1) + ";INTERVAL=1;COUNT=3";
+                }
+                else
+                    obj["RecurrenceRule"] = null;
+                $("#customWindow").ejDialog("close");
+                var object = $("#Schedule1").data("ejSchedule");
+                if (obj.Recurrence) {
+                    var recurEdit = object._appointmentAddWindow.find(".e-recurrenceeditor").data("ejRecurrenceEditor");
+                    recurEdit._recRule = obj[object._appointmentSettings["recurrenceRule"]];
+                }
+                object.saveAppointment(obj);
+                clearFields();
+            }
+
+            function clearFields() {
+                $("#customId").val("");
+                $("#subject").val("");
+                $("#number").val("");
+                $("#job").val("");
+                $("#ScheduleFor, #StartDate, #DueDate").ejDateTimePicker({ value: null });
+                $("#category").ejDropDownList({ value: null });
+                $("#resource").val("");
+                $("#employee").val("");
+                $("#customer").val("");
+                $("#scheduleEquipments").val("");
+
+                $("#customdescription").val("");
+                $("#allday").prop("checked", false);
+                $("#recurrence").prop("checked", false);
+                document.getElementById("rType").selectedIndex = "0";
+                $("tr.recurrence").css("display", "none");
+                $("#StartTime,#EndTime").ejDateTimePicker({ enabled: true });
+            }
+
+            function recurCheck() {
+                if ($("#recurrence").get(0).checked == true)
+                    $("tr.recurrence").css("display", "table-row");
+                else
+                    $("tr.recurrence").css("display", "none");
+            }
+
+            function alldayCheck() {
+                if ($("#allday").prop("checked")) {
+                    var a = $("#StartTime").data("ejDateTimePicker").model.value;
+                    a.setHours(0, 0, 0);
+                    var b = $("#EndTime").data("ejDateTimePicker").model.value;
+                    b.setHours(23, 59, 0);
+                    $("#StartTime").ejDateTimePicker({ value: new Date(a), enabled: false });
+                    $("#EndTime").ejDateTimePicker({ value: new Date(b), enabled: false });
+                }
+                else {
+                    $("#StartTime").ejDateTimePicker({ enabled: true });
+                    $("#EndTime").ejDateTimePicker({ enabled: true });
+                }
+            }
+
+            function temp() {
+                $("#subject").removeClass("error");
+            }
+
+            function cancel() {
+                clearFields();
+                $("#customWindow").ejDialog("close");
+            }
+        </script>
+    }
+    <style>
+        .customcheck {
+            float: left;
+            margin-right: 10px;
+        }
+
+        .error {
+            background-color: #FF8A8A;
+        }
+        .icon-category:before {
+            content: "\e901";
+        }
+
+        #custom table td {
+            padding: 5px;
+        }
+    </style>
+
+
+

@@ -1,0 +1,29 @@
+{
+  "name": "syncfusion-javascript",
+  "version": "15.2.46",
+  "description": "Bower package of Syncfusion.JavaScript.",
+  "authors": [
+    "Syncfusion Inc"
+  ],
+  "license": "SEE LICENSE IN README.md",
+  "homepage": "https://github.com/syncfusion/JavaScript-Widgets#readme",
+  "ignore": [
+    ".npmignore",
+    "package.json"
+  ],
+  "dependencies": {
+    "syncfusion-ej-global": "*",
+    "jquery": "*",
+    "jquery-validation": "*",
+    "jsrender": "*"
+  },
+  "_release": "15.2.46",
+  "_resolution": {
+    "type": "version",
+    "tag": "15.2.46",
+    "commit": "0112bbdb7cfad02cfc204bad6611aad26e4c1ba4"
+  },
+  "_source": "https://github.com/syncfusion/essentialjs-bower.git",
+  "_target": "15.2.46",
+  "_originalSource": "syncfusion-javascript"
+}
