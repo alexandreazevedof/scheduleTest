@@ -4,6 +4,7 @@
 @using System.Collections
 
 @using EF6.Data;
+@using WebMatrix.Data;
 @{
     <!-- Datasource for Appointments -->
 //List<DefaultSchedule> Appoint = new List<DefaultSchedule>();
@@ -15,148 +16,176 @@
     CategorizeValue.Add(new CategorizeSettings { Text = "DM", Id = 1, Color = "#7f993e", FontColor = "#ffffff" });
     CategorizeValue.Add(new CategorizeSettings { Text = "PM", Id = 2, Color = "#ff0000", FontColor = "#ffffff" });
 
-    
+    List<Equipment> EquipmentList = new List<Equipment>();
+
+    //EquipmentList.Add(new Equipment { Id = 1, Name = "Equipment 1" });
+    //EquipmentList.Add(new Equipment { Id = 2, Name = "Machine 2" });
+
+   
+    @*<script type="text/javascript">
+        var dataManager = ej.DataManager({ url: "Home/GetEquipments", adaptor: new ej.UrlAdaptor() });
+    </script>*@
+
+
 }
 
 <div id="customWindow" style="display: none; z-index:10043 !important">
-    <form id="custom">
-        <table width="100%" cellpadding="5">
-            <tbody>
-                <tr style="display: none">
-                    <td>Id:</td>
-                    <td colspan="2">
-                        <input id="customId" type="text" name="Id" />
-                    </td>
-                </tr>
-                <tr>
-                    <td>Subject:</td>
-                    <td colspan="2">
-                        <input id="subject" type="text" value="" name="Subject" onfocus="temp()" style="width: 100%" />
-                    </td>
-                </tr>
-                <tr>
-                    <td>Number:</td>
-                    <td colspan="2">
-                        <input id="number" type="text" value="" name="Number" onfocus="temp()" style="width: 100%" readonly/>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Job:</td>
-                    <td colspan="2">
-                        <input id="job" type="text" value="" name="Job" onfocus="temp()" style="width: 100%" />
-                    </td>
-                </tr>
-                <tr>
-                    <td>Equipment:</td>
-                    <td colspan="2">
-                        <ej-autocomplete id="equipment" name="EquipmentString" width="65%" watermark-text="Search a equipment" 
-                                         multi-select-mode="@MultiSelectModeTypes.VisualMode" filter-type="StartsWith"
-                                         highlight-search="true" >
-                            <e-datamanager url="Home/GetEquipments"></e-datamanager>
-                            <e-autocomplete-fields text="Name" key="Id" />
-                        </ej-autocomplete>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Customer:</td>
-                    <td colspan="2">
-                        <input id="customer" type="text" value="" name="Customer" onfocus="temp()" style="width: 100%" />
-                    </td>
-                </tr>
-                <tr>
-                    <td>Resource:</td>
-                    <td colspan="2">
-                        <input id="resource" type="text" value="" name="Resource" onfocus="temp()" style="width: 100%" />
-                    </td>
-                </tr>
-                <tr>
-                    <td>Employee:</td>
-                    <td colspan="2">
-                        <input id="employee" type="text" value="" name="Employee" onfocus="temp()" style="width: 100%" />
-                    </td>
-                </tr>
-                <tr>
-                    <td>Description:</td>
-                    <td colspan="2">
-                        <textarea id="customdescription" name="Description" rows="3" cols="50" style="width: 100%; resize: vertical"></textarea>
-                    </td>
-                </tr>
-                <tr>
-                    <td>ScheduleFor:</td>
-                    <td>
-                        <input id="ScheduleFor" type="text" value="" name="ScheduleFor" />
-                    </td>
-                </tr>
-                <tr>
-                    <td>StartDate:</td>
-                    <td>
-                        <input id="StartDate" type="text" value="" name="StartDate" />
-                    </td>
-                </tr>
-                <tr>
-                    <td>DueDate:</td>
-                    <td>
-                        <input id="DueDate" type="text" value="" name="DueDate" />
-                    </td>
-                </tr>
-                <tr>
-                    <td>IssueDate:</td>
-                    <td>
-                        <input id="IssueDate" type="text" value="@DateTime.Now" name="IssueDate" />
-                    </td>
-                </tr>
-                <tr>
-                    <td>Category:</td>
-                    <td>
-                        <ej-drop-down-list id="category" name="Category" datasource="CategorizeValue" change="onChange" watermark-text="Select">   
-                            <e-drop-down-list-fields value="Id" text="Text" />
-                        </ej-drop-down-list>
-                    </td>
-                </tr>
-                <tr style="display:none">
-                    <td>StartTime:</td>
-                    <td>
-                        <input id="StartTime" type="text" value="" name="StartTime" />
-                    </td>
-                </tr>
-                <tr style="display:none">
-                    <td>EndTime:</td>
-                    <td>
-                        <input id="EndTime" type="text" value="" name="EndTime" />
-                    </td>
-                </tr>
-                <tr>
-                    <td colspan="3">
-                        <div class="customcheck">AllDay:</div>
-                        <div class="customcheck">
-                            <input id="allday" type="checkbox" name="AllDay" onchange="alldayCheck()" />
-                        </div>
-                        <div class="customcheck">Recurrence:</div>
-                        <div>
-                            <input id="recurrence" type="checkbox" name="Recurrence" onchange="recurCheck()" />
-                        </div>
-                    </td>
-                </tr>
-                <tr class="recurrence" style="display: none">
-                    <td>Type:</td>
-                    <td>
-                        <select id="rType" name="freq">
-                            <option value="daily">Daily</option>
-                            <option value="weekly">Weekly</option>
-                            <option value="monthly">Monthly</option>
-                            <option value="yearly">Yearly</option>
-                        </select>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </form>
-    <div>
-        <button type="submit" onclick="cancel()" id="btncancel" style="float:right;margin-right:20px;margin-bottom:10px;">Cancel</button>
-        <button type="submit" onclick="save()" id="btnsubmit" style="float:right;margin-right:20px;margin-bottom:10px;">Submit</button>
+    <div id="appWindow">
+        <form id="custom">
+            <table width="100%" cellpadding="5">
+                <tbody>
+                    <tr style="display: none">
+                        <td>Id:</td>
+                        <td colspan="2">
+                            <input id="customId" type="text" name="Id" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Subject:</td>
+                        <td colspan="2">
+                            <input id="subject" type="text" value="" name="Subject" onfocus="temp()" style="width: 100%" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Number:</td>
+                        <td colspan="2">
+                            <input id="number" type="text" value="" name="Number" onfocus="temp()" style="width: 100%" readonly />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Job:</td>
+                        <td colspan="2">
+                            <input id="job" type="text" value="" name="Job" onfocus="temp()" style="width: 100%" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Equipment:</td>
+                        <td colspan="2">
+                            <ej-autocomplete id="equipment" name="EquipmentString" width="65%" watermark-text="Search a equipment"
+                                             multi-select-mode="@MultiSelectModeTypes.VisualMode" filter-type="@FilterOperatorType.Contains"
+                                             highlight-search="true" show-reset-icon="true"  show-popup-button="true" enable-distinct="true" enable-auto-fill="true">
+                                <e-autocomplete-fields text="Name" key="Id" />
+                                <e-datamanager url="Home/GetEquipments" adaptor="UrlAdaptor"></e-datamanager>
+                            </ej-autocomplete>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Customer:</td>
+                        <td>
+                            <ej-drop-down-list id="customer" name="CustomerString" change="onChange" watermark-text="Select">
+                                <e-datamanager url="Home/GetCustomers" adaptor="UrlAdaptor"></e-datamanager>
+                                <e-drop-down-list-fields value="Id" text="Name" />
+                            </ej-drop-down-list>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Resource:</td>
+                        <td>
+                            <ej-drop-down-list id="resource" name="ResourceString" change="onChange" watermark-text="Select">
+                                <e-datamanager url="Home/GetResources" adaptor="UrlAdaptor"></e-datamanager>
+                                <e-drop-down-list-fields value="Id" text="Name" />
+                            </ej-drop-down-list>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Employee:</td>
+                        <td>
+                            <ej-drop-down-list id="employee" name="EmployeeString" change="onChange" watermark-text="Select">
+                                <e-datamanager url="Home/GetEmployees" adaptor="UrlAdaptor"></e-datamanager>
+                                <e-drop-down-list-fields value="Id" text="Name" />
+                            </ej-drop-down-list>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Description:</td>
+                        <td colspan="2">
+                            <textarea id="customdescription" name="Description" rows="3" cols="50" style="width: 100%; resize: vertical"></textarea>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>ScheduleFor:</td>
+                        <td>
+                            <input id="ScheduleFor" type="text" value="" name="ScheduleFor" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>StartDate:</td>
+                        <td>
+                            <input id="StartDate" type="text" value="" name="StartDate" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>DueDate:</td>
+                        <td>
+                            <input id="DueDate" type="text" value="" name="DueDate" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>IssueDate:</td>
+                        <td>
+                            <input id="IssueDate" type="text" value="@DateTime.Now" name="IssueDate" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Category:</td>
+                        <td>
+                            <ej-drop-down-list id="category" name="Category" datasource="CategorizeValue" change="onChange" watermark-text="Select">
+                                <e-drop-down-list-fields value="Id" text="Text" />
+                            </ej-drop-down-list>
+                        </td>
+                    </tr>
+                    <tr style="display:none">
+                        <td>StartTime:</td>
+                        <td>
+                            <input id="StartTime" type="text" value="" name="StartTime" />
+                        </td>
+                    </tr>
+                    <tr style="display:none">
+                        <td>EndTime:</td>
+                        <td>
+                            <input id="EndTime" type="text" value="" name="EndTime" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="3">
+                            <div class="customcheck">AllDay:</div>
+                            <div class="customcheck">
+                                <input id="allday" type="checkbox" name="AllDay" onchange="alldayCheck()" />
+                            </div>
+                            <div class="customcheck">Recurrence:</div>
+                            <div>
+                                <input id="recurrence" type="checkbox" name="Recurrence" onchange="recurCheck()" />
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="recurrence" style="display: none">
+                        <td>Type:</td>
+                        <td>
+                            <select id="rType" name="freq">
+                                <option value="daily">Daily</option>
+                                <option value="weekly">Weekly</option>
+                                <option value="monthly">Monthly</option>
+                                <option value="yearly">Yearly</option>
+                            </select>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </form>
+        <div>
+            <button type="submit" onclick="cancel()" id="btncancel" style="float:right;margin-right:20px;margin-bottom:10px;">Cancel</button>
+            <button type="submit" onclick="save()" id="btnsubmit" style="float:right;margin-right:20px;margin-bottom:10px;">Submit</button>
+        </div>
+    </div>
+    <div id="recWindow" style="display: none">
+        <div id="recurrenceEditor"></div>
+        <br />
+        <div>
+            <button type="submit" id="reccancel">Cancel</button>
+            <button type="submit" id="recsubmit">Submit</button>
+        </div>
     </div>
 </div>
-
 
 
 
@@ -175,11 +204,52 @@
                 </div>
                 <div class="categorycontent">
                     <div class="listbox">
-                        @*<e-datamanager url="Home/GetCatogories"></e-datamanager>*@
-                        <ej-list-box id="categoryList"  show-checkbox="true" datasource="CategorizeValue" allow-multi-selection="true" check-change="onFilter" 
+                        <ej-list-box id="categoryList"  height="100px" show-checkbox="true" allow-multi-selection="true" check-change="onFilter" 
                                      check-all="true" >
-                            
-                            <e-list-box-fields id="Id" text="Text" value="Text" />
+                            <e-datamanager url="Home/GetCatogories" adaptor="UrlAdaptor"></e-datamanager>
+                            <e-list-box-fields id="Id" text="Text" value="Id" />
+                        </ej-list-box>
+                    </div>
+                </div>
+            </div>
+            <div class="customer">
+                <div class="customerheader">
+                    <div class="headertext">CUSTOMER</div>
+                </div>
+                <div class="customercontent">
+                    <div class="listbox">
+                        <ej-list-box id="customerList" show-checkbox="true" height="100px" allow-multi-selection="true" check-change="onFilter"
+                                     check-all="true">
+                            <e-datamanager url="Home/GetCustomers" adaptor="UrlAdaptor"></e-datamanager>
+                            <e-list-box-fields Id="Id" text="Name" value="Id" />
+                        </ej-list-box>
+                    </div>
+                </div>
+            </div>
+            <div class="resource">
+                <div class="resourceheader">
+                    <div class="headertext">RESOURCE</div>
+                </div>
+                <div class="resourcecontent">
+                    <div class="listbox">
+                        <ej-list-box id="resourceList" show-checkbox="true" height="60px" allow-multi-selection="true" check-change="onFilter"
+                                     check-all="true">
+                            <e-datamanager url="Home/GetResources" adaptor="UrlAdaptor"></e-datamanager>
+                            <e-list-box-fields Id="Id" text="Name" value="Id" />
+                        </ej-list-box>
+                    </div>
+                </div>
+            </div>
+            <div class="employee">
+                <div class="employeeheader">
+                    <div class="headertext">EMPLOYEE</div>
+                </div>
+                <div class="employeecontent">
+                    <div class="listbox">
+                        <ej-list-box id="employeeList" show-checkbox="true" height="100px" allow-multi-selection="true" check-change="onFilter"
+                                     check-all="true">
+                            <e-datamanager url="Home/GetEmployees" adaptor="UrlAdaptor"></e-datamanager>
+                            <e-list-box-fields Id="Id" text="Name" value="Id" />
                         </ej-list-box>
                     </div>
                 </div>
@@ -217,11 +287,11 @@
             <e-categorize-settings enable="true" datasource="CategorizeValue" allow-multiple="true" id="Id" text="Text" color="Color" font-color="FontColor">
                 
             </e-categorize-settings>
-            <e-appointment-settings apply-time-offset="false" id="Id" subject='"Subject"' number='"Number"' job='"Job"' StartDate='"StartDate"' DueDate='"DueDate"' IssueDate='"IssueDate"' start-time='"StartTime"' end-time='"EndTime"' categorize='"Category"' all-day='false' recurrence='"Recurrence"' recurrence-rule='"RecurrenceRule"' >
+            <e-appointment-settings apply-time-offset="false" id="Id" subject='"Subject"' number='"Number"' job='"Job"' Customers='"Customers"' StartDate='"StartDate"' DueDate='"DueDate"' IssueDate='"IssueDate"' start-time='"StartTime"' end-time='"EndTime"' categorize='"Category"' all-day='false' recurrence='"Recurrence"' recurrence-rule='"RecurrenceRule"' >
                 <e-datamanager url="Home/GetData" batch-url="Home/Batch" insert-url="Home/Add" update-url="Home/Update" remove-url="Home/Remove" adaptor="UrlAdaptor"></e-datamanager>
             </e-appointment-settings>
         </ej-schedule>
-
+        
     </div>
     </div>
 
@@ -235,6 +305,10 @@
                 $("#IssueDate").ejDateTimePicker({ width: "150px" });
                 $("#StartTime").ejDateTimePicker({ width: "150px" });
                 $("#EndTime").ejDateTimePicker({ width: "150px" });
+                $("#recurrence").ejCheckBox({ change: "recurCheck" });
+                $("#reccancel,#recsubmit").ejButton({ click: "onRecurrenceClick" });
+                // defining recurrence editor control to be used as custom appointment window
+                $("#recurrenceEditor").ejRecurrenceEditor({ selectedRecurrenceType: 0, frequencies: ["daily", "weekly", "monthly", "yearly", "everyweekday"] });
                 $("#customWindow").ejDialog({
                     width: 600,
                     height: "auto",
@@ -245,7 +319,8 @@
                     allowKeyboardNavigation: false,
                     close: "clearFields"
                 });
-
+                
+                
                 //$("#categoryList").ejListBox({
                 //    width: "100%",
                 //    height: "60%",
@@ -259,15 +334,21 @@
             });
 
             function onFilter(args) {
-                var dropDownListObj = $("#selectDate").data("ejDropDownList");
+                var dropDownListDateObj = $("#selectDate").data("ejDropDownList");
                 var categoryObj = $("#categoryList").data('ejListBox');
+                var customerObj = $("#customerList").data('ejListBox');
+                var resourceObj = $("#resourceList").data('ejListBox');
+                var employeeObj = $("#employeeList").data('ejListBox');
+
+
                 var scheduleObj = $("#Schedule1").data("ejSchedule");
 
                 scheduleObj.dataSource().dataSource.url = "Home/filterData"; //controller method
                 var query = new ej.Query();
 
-                query.addParams("Date", dropDownListObj.selectedTextValue);
-                
+                query.addParams("Date", dropDownListDateObj.selectedTextValue);
+
+                //adding checked categories to filter
                 var categoryListChecked = $.extend(true, [], categoryObj.model.checkedIndices);
 
                 var categorySelected = [];
@@ -275,6 +356,35 @@
                     categorySelected.push(categoryObj.listitems[categoryListChecked[i]]);
                 }
                 query.addParams("FilteredCategoryList", categorySelected);
+
+
+                //adding checked customer to filter
+                var customerListChecked = $.extend(true, [], customerObj.model.checkedIndices);
+
+                var customerSelected = [];
+                for (var i = 0; i < customerListChecked.length; i++) {
+                    customerSelected.push(customerObj.listitems[customerListChecked[i]]);
+                }
+                query.addParams("FilteredCustomerList", customerSelected);
+
+                //adding checked resource to filter
+                var resourceListChecked = $.extend(true, [], resourceObj.model.checkedIndices);
+
+                var resourceSelected = [];
+                for (var i = 0; i < resourceListChecked.length; i++) {
+                    resourceSelected.push(resourceObj.listitems[resourceListChecked[i]]);
+                }
+                query.addParams("FilteredResourceList", resourceSelected);
+
+                //adding checked employee to filter
+                var employeeListChecked = $.extend(true, [], employeeObj.model.checkedIndices);
+
+                var employeeSelected = [];
+                for (var i = 0; i < employeeListChecked.length; i++) {
+                    employeeSelected.push(employeeObj.listitems[employeeListChecked[i]]);
+                }
+                query.addParams("FilteredEmployeeList", employeeSelected);
+
 
                 scheduleObj.model.appointmentSettings.query = query;
                 scheduleObj.refreshAppointments();
@@ -369,20 +479,7 @@
                 //scheduleObj.refreshAppointments();
 
             //}
-            function onSelected1(args) {
-                strtDate = args.date.getTime();// start date will be stored
-            }
-
-            function onSelected2(args) {
-                endDate = args.date.getTime();// end date will be stored
-                days = ((endDate - strtDate) / (1000 * 3600 * 24) + 1); // diff between start and end days will be stored 
-                $("#Schedule1").ejSchedule({
-                    currentDate: new Date(strtDate),
-                    agendaViewSettings: {
-                        daysInAgenda: days
-                    }
-                });
-            }
+           
 
             function onClick(args) {
                 this._allDay = $(args.target.currentTarget).hasClass("e-alldaycells");
@@ -394,7 +491,8 @@
                 //$("#EndTime").ejDateTimePicker({ value: args.endTime });
 
                 $("#IssueDate").ejDateTimePicker({ enabled: false });
-
+                $("#recWindow").css("display", "none");
+                $("#appWindow").css("display", "");
                 var rand = Math.floor(Math.random() * 99999999).toString();
                 $("#number").val(rand);
 
@@ -417,10 +515,10 @@
                     $("#DueDate").ejDateTimePicker({ value: new Date(args.appointment.DueDate) });
                     $("#IssueDate").ejDateTimePicker({ value: new Date(args.appointment.IssueDate) });
                     $("#category").ejDropDownList({ value: args.appointment.Category });
-                    $("#resource").val(args.appointment.Resource);
-                    $("#employee").val(args.appointment.Employee);
-                    $("#customer").val(args.appointment.Customer);
-                    //$("#equipment").ejAutocomplete({ value: args.appointment.Equipments);
+                    $("#resource").ejDropDownList({ value: args.appointment.ResourceString });
+                    $("#employee").ejDropDownList({ value: args.appointment.EmployeeString });
+                    $("#customer").ejDropDownList({ value: args.appointment.CustomerString });
+                    //$("#equipment_hidden").ejAutocomplete({ value: args.appointment.EquipmentString, DefaultValue: args.appointment.EquipmentString });
                     //$("#equipment").val(args.appointment.Equipment);
 
                     $("#customdescription").val(args.appointment.Description);
@@ -429,8 +527,13 @@
                     $("#allday").prop("checked", args.appointment.AllDay);
                     $("#recurrence").prop("checked", args.appointment.Recurrence);
                     if (args.appointment.Recurrence) {
-                        $("#rType").val(args.appointment.RecurrenceRule.split(";")[0].split("=")[1].toLowerCase());
-                        $("tr.recurrence").css("display", "table-row");
+                        recObj = $("#recurrenceEditor").ejRecurrenceEditor('instance');
+                        $("#edittr").css("display", "");
+                        $("#recsummary").html(args.appointment.RecurrenceRule);
+                        $("#summarytr").css("display", "");
+                        recObj._recRule = args.appointment.RecurrenceRule; // app recurrence rule is stored in Recurrence editor object
+                        recObj.recurrenceRuleSplit(args.appointment.RecurrenceRule, args.appointment.recurrenceExDate); //splitting the recurrence rule
+                        recObj.showRecurrenceSummary(args.appointment.Id); // updating the recurrence rule in Recurrence editor
                     }
                 }
                 $("#customWindow").ejDialog("open");
@@ -475,31 +578,65 @@
                                     temp[columnName] = rType.options[rType.selectedIndex].value;
                                 }
                             }
-                            obj[columnName] = value;
+
+                            switch (columnName) {
+                                case "customer":
+                                    obj["CustomerString"] = value;
+                                    break;
+                                case "resource":
+                                    obj["ResourceString"] = value;
+                                    break;
+                                case "employee":
+                                    obj["EmployeeString"] = value;
+                                    break;
+                                default:
+                                    obj[columnName] = value;
+                                    break;
+
+                            }
+                            
+                            
                            
                         }
                     }
                 }
-                if (obj.Recurrence) {
-                    if (temp.freq.toUpperCase() == "DAILY")
-                        obj["RecurrenceRule"] = "FREQ=DAILY;INTERVAL=1;COUNT=5";
-                    else if (temp.freq.toUpperCase() == "WEEKLY")
-                        obj["RecurrenceRule"] = "FREQ=WEEKLY;BYDAY=MO,WE,TH;INTERVAL=1;COUNT=10";
-                    else if (temp.freq.toUpperCase() == "MONTHLY")
-                        obj["RecurrenceRule"] = "FREQ=MONTHLY;BYMONTHDAY=" + obj.StartTime.getDate() + ";INTERVAL=1;COUNT=5";
-                    else if (temp.freq.toUpperCase() == "YEARLY")
-                        obj["RecurrenceRule"] = "FREQ=YEARLY;BYMONTHDAY=" + obj.StartTime.getDate() + ";BYMONTH=" + (obj.StartTime.getMonth() + 1) + ";INTERVAL=1;COUNT=3";
-                }
-                else
-                    obj["RecurrenceRule"] = null;
+
+                obj["RecurrenceRule"] = (obj.Recurrence) ? recurRule : null;
+
                 $("#customWindow").ejDialog("close");
                 var object = $("#Schedule1").data("ejSchedule");
-                if (obj.Recurrence) {
-                    var recurEdit = object._appointmentAddWindow.find(".e-recurrenceeditor").data("ejRecurrenceEditor");
-                    recurEdit._recRule = obj[object._appointmentSettings["recurrenceRule"]];
-                }
+               
                 object.saveAppointment(obj);
                 clearFields();
+            }
+
+            // This function executes when the submit/cancel button in the recurrence editor window is pressed.
+            function onRecurrenceClick(args) {
+                if ($(args.e.currentTarget).attr("id") == "recsubmit") {
+                    recObj = $("#recurrenceEditor").ejRecurrenceEditor('instance');
+                    recObj.closeRecurPublic();
+                    recurRule = recObj._recRule;
+                    $("#recsummary").html(recurRule);
+                }
+                else
+                    if (($(args.e.currentTarget).attr("id") == "reccancel")) {
+                        if ($("#recsummary").html() == "") {
+                            $("#edittr").css("display", "none");
+                            $("#recurrence").ejCheckBox({ checked: false });
+                        }
+                        else
+                            $("#recurrence").ejCheckBox({ checked: true });
+                    }
+                $("#recWindow").css("display", "none");
+                $("#appWindow").css("display", "");
+                if ($("#recsummary").html() != "")
+                    $("#summarytr").css("display", "");
+
+            }
+
+            function Recurrencerule() {
+                $("#recWindow").css("display", "");
+                $("#appWindow").css("display", "none");
             }
 
             function clearFields() {
@@ -509,10 +646,9 @@
                 $("#job").val("");
                 $("#ScheduleFor, #StartDate, #DueDate").ejDateTimePicker({ value: null });
                 $("#category").ejDropDownList({ value: null });
-                $("#resource").val("");
-                $("#employee").val("");
-                $("#customer").val("");
+               
                 $("#scheduleEquipments").val("");
+                $("#customer, #employee, #resource").ejDropDownList({ value: null });
 
                 $("#customdescription").val("");
                 $("#allday").prop("checked", false);
@@ -522,11 +658,22 @@
                 $("#StartTime,#EndTime").ejDateTimePicker({ enabled: true });
             }
 
-            function recurCheck() {
-                if ($("#recurrence").get(0).checked == true)
-                    $("tr.recurrence").css("display", "table-row");
-                else
-                    $("tr.recurrence").css("display", "none");
+            // This function executes when the recurrence checkbox is checked in the custom appointment window
+            function recurCheck(args) {
+                if (args.isInteraction) {
+                    if ($("#recurrence").get(0).checked == true) {  // Displays the recurrence field, when recurrence checkbox is checked.
+                        $("#recWindow").css("display", "");
+                        $("#appWindow").css("display", "none");
+                        $("#edittr").css("display", "");
+
+                    }
+                    else {
+                        $("#recWindow").css("display", "none");
+                        $("#edittr").css("display", "none");
+                        $("#recsummary").html("");
+                        $("#summarytr").css("display", "none");
+                    }
+                }
             }
 
             function alldayCheck() {
@@ -548,7 +695,9 @@
                 $("#subject").removeClass("error");
             }
 
+            // This function executes when the cancel button in the custom appointment window is pressed.
             function cancel() {
+                recObj = $("#recurrenceEditor").ejRecurrenceEditor('instance');
                 clearFields();
                 $("#customWindow").ejDialog("close");
             }

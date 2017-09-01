@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System;
 using System.Reflection;
 using EF6.Data;
+using System.Data.Entity;
 
 namespace Schedule.Controllers
 {
@@ -16,9 +17,14 @@ namespace Schedule.Controllers
         }
         public List<DefaultSchedule> GetData()
         {
-            
 
-            List<DefaultSchedule> datas = _context.DefaultSchedule.Take(100).ToList();
+
+            List<DefaultSchedule> datas =  _context.DefaultSchedule
+                .Include(c => c.Customers)
+                .Include(c => c.Equipments)
+                .Include(c =>c.Resources)
+                .Include(c => c.Employees)
+                .ToList();
             return datas;
         }
 
@@ -28,10 +34,29 @@ namespace Schedule.Controllers
             return data;
         }
 
-        public List<Equipment> GetEquipments()
+        public List<Employee> GetEmployees()
         {
-            List<Equipment> data = _context.Equipments.ToList();
+            List<Employee> data = _context.Employees.ToList();
             return data;
+        }
+
+        public List<Resource> GetResources()
+        {
+            List<Resource> data = _context.Resources.ToList();
+            return data;
+        }
+        
+       
+        public List<Customer> GetCustomers(){
+            List<Customer> data = _context.Customers.ToList();
+            return data;
+        }
+
+        public JsonResult GetEquipments()
+        {
+            var data = _context.Equipments;
+
+            return Json(data);
         }
 
         //Filter data based on desired view: Start Date, Due Date or Issue Date
@@ -50,6 +75,23 @@ namespace Schedule.Controllers
                 result = items.Where(item => request.FilteredCategoryList.Any(c => c.Id.Equals(Convert.ToInt32(item.Category)))).ToList();
 
             }
+            //customer filter
+            if (request.FilteredCustomerList != null)
+            {
+                result = result.Where(item => request.FilteredCustomerList.Any(c => c.Id.Equals(Convert.ToInt32(item.CustomerString)))).ToList();
+            }
+            //resource filter
+            if(request.FilteredResourceList != null)
+            {
+                result = result.Where(item => request.FilteredResourceList.Any(c => c.Id.Equals(Convert.ToInt32(item.ResourceString)))).ToList();
+            }
+            
+            //employee filter
+            if(request.FilteredEmployeeList != null)
+            {
+                result = result.Where(item => request.FilteredEmployeeList.Any(c => c.Id.Equals(Convert.ToInt32(item.EmployeeString)))).ToList();
+            }
+            
 
             //filter based on DateView selected
             for (var i = 0; i < result.Count; i++)
@@ -99,6 +141,10 @@ namespace Schedule.Controllers
             public bool isChecked { get; set; }
 
             public CategorizeSettings[] FilteredCategoryList { get; set; }
+            public Customer[] FilteredCustomerList { get; set; }
+            public Resource[] FilteredResourceList { get; set; }
+            public Employee[] FilteredEmployeeList { get; set; }
+
         }
         public List<DefaultSchedule> Add([FromBody] EditParams param)
         {
@@ -117,8 +163,9 @@ namespace Schedule.Controllers
                 {
                     //database automatic generate ids
                     continue;
-                }else if(newName[1] == "Equipments")
+                }else if(newName[1] == "Equipments" || newName[1] == "Customers" || newName[1] == "Resources" || newName[1] == "Employees")
                 {
+                    //Those list will be set based on their Strings.
                     continue;
                 }
                 else if (newName[1] == "ScheduleFor" || newName[1] == "StartDate" || newName[1] == "DueDate" || newName[1] == "IssueDate")
@@ -149,6 +196,11 @@ namespace Schedule.Controllers
 
                     }
                     continue;
+                }else if(newName[1] == "CustomerString")
+                {
+                    int id = Convert.ToInt32(fieldName.GetValue(value).ToString());
+                    var customer = _context.Customers.Single(c => c.Id == id);
+                    appoint.Customers.Add(customer);
                 }
 
 
@@ -161,10 +213,10 @@ namespace Schedule.Controllers
         public List<DefaultSchedule> Update([FromBody] EditParams param)
         {
             var value = param.action == "update" ? param.value : param.changed[0];
-            var filterData = _context.DefaultSchedule.Where(c => c.Id == Convert.ToInt32(value.Id));
+            var filterData = _context.DefaultSchedule.Where(c => c.Id == value.Id);
             if (filterData.Count() > 0)
             {
-                DefaultSchedule appoint = _context.DefaultSchedule.Single(A => A.Id == Convert.ToInt32(value.Id));
+                DefaultSchedule appoint = _context.DefaultSchedule.Single(A => A.Id == value.Id);
                 appoint.Number = value.Number;
                 appoint.Job = value.Job;
                 appoint.ScheduleFor = Convert.ToDateTime(value.ScheduleFor);
@@ -172,9 +224,12 @@ namespace Schedule.Controllers
                 appoint.DueDate = Convert.ToDateTime(value.DueDate);
                 appoint.IssueDate = Convert.ToDateTime(value.IssueDate);
                 appoint.Category = value.Category;
-                appoint.Resource = value.Resource;
-                appoint.Employee = value.Employee;
-                appoint.Customer = value.Customer;
+                appoint.Resources = value.Resources;
+                appoint.Employees = value.Employees;
+                appoint.Customers = value.Customers;
+                appoint.EmployeeString = value.EmployeeString;
+                appoint.ResourceString = value.ResourceString;
+                appoint.CustomerString = value.CustomerString;
                 //appoint.Equipment = value.Equipment;
                 appoint.StartTime = Convert.ToDateTime(value.StartTime);
                 appoint.EndTime = Convert.ToDateTime(value.EndTime);
@@ -277,10 +332,10 @@ namespace Schedule.Controllers
             if (param.action == "update" || (param.action == "batch" && (param.changed.Count > 0))) // this block of code will execute while updating the appointment
             {
                 var value = param.action == "update" ? param.value : param.changed[0];
-                var filterData = _context.DefaultSchedule.Where(c => c.Id == Convert.ToInt32(value.Id));
+                var filterData = _context.DefaultSchedule.Where(c => c.Id == value.Id);
                 if (filterData.Count() > 0)
                 {
-                    DefaultSchedule appoint = _context.DefaultSchedule.Single(A => A.Id == Convert.ToInt32(value.Id));
+                    DefaultSchedule appoint = _context.DefaultSchedule.Single(A => A.Id == value.Id);
                     appoint.Number = value.Number;
                     appoint.Job = value.Job;
                     appoint.ScheduleFor = Convert.ToDateTime(value.ScheduleFor);
@@ -289,9 +344,12 @@ namespace Schedule.Controllers
                     appoint.IssueDate = Convert.ToDateTime(value.IssueDate);
                     appoint.StartTime = Convert.ToDateTime(value.StartTime);
                     appoint.Category = value.Category;
-                    appoint.Resource = value.Resource;
-                    appoint.Employee = value.Employee;
-                    appoint.Customer = value.Customer;
+                    appoint.Resources = value.Resources;
+                    appoint.Employees = value.Employees;
+                    appoint.Customers = value.Customers;
+                    appoint.EmployeeString = value.EmployeeString;
+                    appoint.ResourceString = value.ResourceString;
+                    appoint.CustomerString = value.CustomerString;
                     //appoint.Equipment = value.Equipment;
                     appoint.EndTime = Convert.ToDateTime(value.EndTime);
                     appoint.Subject = value.Subject;

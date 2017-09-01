@@ -147,6 +147,18 @@
     <Compile Include="Migrations\201708302027572_categoryID2.Designer.cs">
       <DependentUpon>201708302027572_categoryID2.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201708311552119_addRelations.cs" />
+    <Compile Include="Migrations\201708311552119_addRelations.Designer.cs">
+      <DependentUpon>201708311552119_addRelations.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201708311623327_addRelationsStrings.cs" />
+    <Compile Include="Migrations\201708311623327_addRelationsStrings.Designer.cs">
+      <DependentUpon>201708311623327_addRelationsStrings.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201708311722190_addRelationsStrings2.cs" />
+    <Compile Include="Migrations\201708311722190_addRelationsStrings2.Designer.cs">
+      <DependentUpon>201708311722190_addRelationsStrings2.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -174,6 +186,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201708302027572_categoryID2.resx">
       <DependentUpon>201708302027572_categoryID2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201708311552119_addRelations.resx">
+      <DependentUpon>201708311552119_addRelations.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201708311623327_addRelationsStrings.resx">
+      <DependentUpon>201708311623327_addRelationsStrings.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201708311722190_addRelationsStrings2.resx">
+      <DependentUpon>201708311722190_addRelationsStrings2.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

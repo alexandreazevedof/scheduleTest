@@ -18,13 +18,20 @@ namespace EF6.Data
         public virtual DbSet<DefaultSchedule> DefaultSchedule { get; set; }
         public virtual DbSet<CategorizeSettings> CategorizeSettings { get; set; }
         public virtual DbSet<Equipment> Equipments { get; set; }
-        //public DbSet<ScheduleEquipment> ScheduleEquipments { get; set; }
+
+        public virtual DbSet<Customer> Customers { get; set; }
+        public virtual DbSet<Employee> Employees { get; set; }
+        public virtual DbSet<Resource> Resources { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder.Entity<DefaultSchedule>().ToTable("DefaultSchedule");
             modelBuilder.Entity<CategorizeSettings>().ToTable("CategorizeSetting");
             modelBuilder.Entity<Equipment>().ToTable("Equipment");
+
+            modelBuilder.Entity<Customer>().ToTable("Customer");
+            modelBuilder.Entity<Employee>().ToTable("Employee");
+            modelBuilder.Entity<Resource>().ToTable("Resource");
 
             base.OnModelCreating(modelBuilder);
             //modelBuilder.Entity<ScheduleEquipment>().ToTable("ScheduleEquipments");
@@ -47,6 +54,9 @@ namespace EF6.Data
         public DefaultSchedule()
         {
             this.Equipments = new HashSet<Equipment>();
+            this.Customers = new HashSet<Customer>();
+            this.Employees = new HashSet<Employee>();
+            this.Resources = new HashSet<Resource>();
         }
 
         [Key]
@@ -59,17 +69,20 @@ namespace EF6.Data
         public DateTime IssueDate { get; set; }
         public string Subject { get; set; }
         public bool AllDay { get; set; }
-        public bool Recurrence { get; set; }
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }
         public string Description { get; set; }
+        public bool Recurrence { get; set; }
         public string RecurrenceRule { get; set; }
         public string Category { get; set; }
         public string EquipmentString { get; set; }
         public virtual ICollection<Equipment> Equipments { get; set; }
-        public string Resource { get; set; }
-        public string Employee { get; set; }
-        public string Customer { get; set; }
+        public string ResourceString { get; set; }
+        public virtual ICollection<Resource> Resources { get; set; }
+        public string EmployeeString { get; set; }
+        public virtual  ICollection<Employee> Employees { get; set; }
+        public string CustomerString { get; set; }
+        public virtual ICollection<Customer> Customers { get; set; }
     }
 
     public class CategorizeSettings
@@ -80,6 +93,39 @@ namespace EF6.Data
         public string Color { get; set; }
         public string FontColor { get; set; }
 
+    }
+
+    public class Customer
+    {
+        public Customer()
+        {
+            this.DefaultSchedules = new HashSet<DefaultSchedule>();
+        }
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public virtual ICollection<DefaultSchedule> DefaultSchedules { get; set; }
+    }
+
+    public class Resource
+    {
+        public Resource()
+        {
+            this.DefaultSchedules = new HashSet<DefaultSchedule>();
+        }
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public virtual ICollection<DefaultSchedule> DefaultSchedules { get; set; }
+    }
+
+    public class Employee
+    {
+        public Employee()
+        {
+            this.DefaultSchedules = new HashSet<DefaultSchedule>();
+        }
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public virtual ICollection<DefaultSchedule> DefaultSchedules { get; set; }
     }
 
     public class Equipment
